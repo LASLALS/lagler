@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Lagler</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000000;
+            color: white;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+            cursor: auto;
+        }
+        
+        /* ОБОИ */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)),
+                url('https://i.ibb.co/nsKmt7Q9/photo-2024-12-03-01-48-24.jpg') center/cover;
+            z-index: 0;
+        }
+        
+        /* ЗАТЕМНЕНИЕ ДЛЯ ЛУЧШЕЙ ЧИТАЕМОСТИ */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+        
+        /* СНЕГ */
+        .snow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            overflow: hidden;
+        }
+        
+        .snowflake {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            pointer-events: none;
+            user-select: none;
+            animation: snowFall linear forwards;
+        }
+        
+        @keyframes snowFall {
+            0% {
+                transform: translateY(-100px) translateX(0px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(100vh) translateX(var(--end-x));
+                opacity: 0;
+            }
+        }
+        
+        /* АНИМИРОВАННЫЙ НИКНЕЙМ */
+        .name-title {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 3;
+        }
+        
+        .name-text {
+            font-size: 64px;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            letter-spacing: 5px;
+            opacity: 0;
+        }
+        
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: letterAppear 0.3s ease forwards;
+        }
+        
+        @keyframes letterAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .container {
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 3;
+            margin-top: 60px;
+        }
+        
+        .avatar {
+            width: 115px;
+            height: 115px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            margin: 0 auto 25px;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(1.1) contrast(1.1);
+        }
+        
+        .avatar::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #8b5cf6, #a855f7, #c084fc);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.7;
+        }
+        
+        .name {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 25px;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5),
+                        0 0 20px rgba(255, 255, 255, 0.3),
+                        0 0 30px rgba(255, 255, 255, 0.2);
+            letter-spacing: 1px;
+            animation: nameGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes nameGlow {
+            from {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5),
+                           0 0 20px rgba(255, 255, 255, 0.3),
+                           0 0 30px rgba(255, 255, 255, 0.2);
+            }
+            to {
+                text-shadow: 0 0 15px rgba(255, 255, 255, 0.7),
+                           0 0 25px rgba(255, 255, 255, 0.5),
+                           0 0 35px rgba(255, 255, 255, 0.3);
+            }
+        }
+        
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+        }
+        
+        .link {
+            display: block;
+            padding: 15px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            font-weight: normal;
+            font-size: 15px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        
+        .link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .social-link {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            font-family: Arial, sans-serif;
+        }
+        
+        .social-link:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <!-- ОБОИ -->
+    <div class="background"></div>
+    <div class="overlay"></div>
+    
+    <!-- СНЕГ -->
+    <div class="snow" id="snow"></div>
+    
+    <!-- АНИМИРОВАННЫЙ НИКНЕЙМ -->
+    <div class="name-title">
+        <div class="name-text" id="nameText"></div>
+    </div>
+    
+    <div class="container">
+        <!-- АВАТАРКА -->
+        <div class="avatar">
+            <img src="https://i.ibb.co/gN0jZYj/2024-12-02-22-28-28.png" alt="Lagler">
+        </div>
+        
+        <!-- ИМЯ С СВЕЧЕНИЕМ -->
+        <div class="name">Lagler</div>
+        
+        <!-- ССЫЛКИ -->
+        <div class="links">
+            <a href="https://t.me/Laglery" class="link" target="_blank">Telegram</a>
+            <a href="https://vk.com/itslagler" class="link" target="_blank">VKontakte</a>
+            <a href="https://www.tiktok.com/@lagler_fora?_r=1&_t=ZS-915yiMlwClM" class="link" target="_blank">TikTok</a>
+            <a href="https://discordapp.com/users/757063940193910875" class="link" target="_blank">Discord</a>
+            <a href="https://music.yandex.ru/playlists/lk.2e21a5ca-726e-4c6c-8f82-5e638fdc16c6?utm_source=desktop&utm_medium=copy_link" class="link" target="_blank">Я.Музыка</a>
+        </div>
+        
+        <!-- СОЦСЕТИ -->
+        <div class="social-links">
+            <a href="#" class="social-link">🔗</a>
+            <a href="#" class="social-link">📸</a>
+            <a href="#" class="social-link">🎵</a>
+        </div>
+    </div>
+
+    <script>
+        // АНИМАЦИЯ НИКНЕЙМА
+        const nameText = document.getElementById('nameText');
+        const nickname = "LAGLER";
+        let currentIndex = 0;
+        let isShowing = true;
+        
+        function animateName() {
+            if (isShowing) {
+                if (currentIndex <= nickname.length) {
+                    nameText.innerHTML = nickname.slice(0, currentIndex) + 
+                        nickname.slice(currentIndex).split('').map(letter => 
+                            `<span class="letter" style="animation-delay: ${Math.random() * 0.5}s">${letter}</span>`
+                        ).join('');
+                    currentIndex++;
+                    setTimeout(animateName, 150);
+                } else {
+                    setTimeout(() => {
+                        isShowing = false;
+                        animateName();
+                    }, 2000);
+                }
+            } else {
+                if (currentIndex >= 0) {
+                    nameText.innerHTML = nickname.slice(0, currentIndex);
+                    currentIndex--;
+                    setTimeout(animateName, 100);
+                } else {
+                    setTimeout(() => {
+                        isShowing = true;
+                        animateName();
+                    }, 1000);
+                }
+            }
+        }
+        
+        // СНЕГ БЕЗ РЕАКЦИИ НА МЫШЬ
+        const snowContainer = document.getElementById('snow');
+        const snowflakes = ['•', '⋅', '˚', '✧', '*', '+', '❄', '❅', '❆'];
+        
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.innerHTML = snowflakes[Math.floor(Math.random() * snowflakes.length)];
+            
+            const size = Math.random() * 8 + 10;
+            snowflake.style.fontSize = size + 'px';
+            
+            // Случайная начальная позиция
+            const startX = Math.random() * 100;
+            snowflake.style.left = startX + 'vw';
+            snowflake.style.top = '-20px';
+            
+            // Случайное смещение по X (без реакции на мышь)
+            const endX = (Math.random() * 100 - 50);
+            snowflake.style.setProperty('--end-x', endX + 'px');
+            
+            const duration = Math.random() * 3 + 3;
+            snowflake.style.animationDuration = duration + 's';
+            
+            const delay = Math.random() * 2;
+            snowflake.style.animationDelay = delay + 's';
+            
+            snowContainer.appendChild(snowflake);
+            
+            // Удаляем снежинку после анимации
+            setTimeout(() => {
+                if (snowflake.parentNode) {
+                    snowflake.remove();
+                }
+            }, (duration + delay) * 1000);
+        }
+        
+        // ЗАПУСК ВСЕХ ЭФФЕКТОВ
+        animateName();
+        
+        function startSnow() {
+            for (let i = 0; i < 25; i++) {
+                setTimeout(() => {
+                    createSnowflake();
+                }, i * 100);
+            }
+        }
+        
+        startSnow();
+        
+        setInterval(() => {
+            createSnowflake();
+        }, 200);
+    </script>
+</body>
+</html>
